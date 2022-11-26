@@ -1,0 +1,285 @@
+#include <PS2X_lib.h>
+#include <Servo.h>
+
+#define ENB 3 
+#define IN3 8 
+#define IN4 9
+#define ENA 5
+#define IN1 6
+#define IN2 7
+#define servo1 11
+#define servo2 10
+     
+void tien(int a, int b);
+void lui(int a, int b);
+void phai(int a, int b);
+void trai(int a, int b);
+void dung(int a,int b);
+void kep();
+void nha();
+void nang();
+void ha();
+
+PS2X ps2x; 
+Servo nang10;
+Servo kep11;
+
+int goc1 = 180;
+int goc2 = 0;
+int y;
+int error = 0; 
+byte type = 0;
+byte vibrate = 0;
+
+
+void setup()
+{
+   Serial.begin(115200);
+
+   pinMode(ENA, OUTPUT);
+   pinMode(IN1, OUTPUT);
+   pinMode(IN2, OUTPUT);
+   pinMode(ENB, OUTPUT);
+   pinMode(IN3, OUTPUT);
+   pinMode(IN4, OUTPUT);
+   nang10.attach(servo2); 
+   kep11.attach(servo1); 
+   //error = ps2x.config_gamepad(10,12,11,13, false, false); 
+   error = ps2x.config_gamepad(A3,A1,A2,A0, false, false);
+   type = ps2x.readType();
+    
+   digitalWrite(ENA,0);
+   digitalWrite(ENB,0);
+   kep11.write(180);
+   nang10.write(40);
+
+   if(error == 0)
+   {
+      Serial.println("Found Controller, configured successful");
+   }
+   else if(error == 1)
+      Serial.println("No controller found, check wiring or reset the Arduino");  
+   else if(error == 2)
+      Serial.println("Controller found but not accepting commands"); 
+   else if(error == 3)
+      Serial.println("Controller refusing to enter Pressures mode, may not support it.");
+     
+   switch(type) 
+   {
+    case 0:
+      Serial.println("Unknown Controller type");
+      break;
+    case 1:
+      Serial.println("DualShock Controller Found");
+      break;
+    case 2:
+      Serial.println("GuitarHero Controller Found");
+      break;
+    }
+}
+
+
+void loop(){
+   
+   if(error == 1)
+    return; 
+   else
+   {
+    
+     ps2x.read_gamepad(false, vibrate);
+//------------------------------------------------------------------------------------     
+     if(ps2x.Button(PSB_PAD_UP)) 
+     {
+          Serial.println("tien");
+          y= ps2x.Analog(PSS_RY);
+          tien(128,128); 
+          if (y != 128)
+          {
+            y = 255 - y;
+            tien(y,y);
+          }
+      }
+      if(ps2x.Button(PSB_PAD_DOWN))
+      {
+          Serial.println("lui");
+          y= ps2x.Analog(PSS_RY);
+          lui(128,128); 
+          if (y != 128)
+          {
+            y = 255 - y;
+            lui(y,y);
+          }
+      }  
+      if(ps2x.Button(PSB_PAD_RIGHT))
+      {
+          Serial.println("phai");
+          tien(0,255);
+      }
+      if(ps2x.Button(PSB_PAD_LEFT))
+      {
+          Serial.println("trai");
+          tien(255,0); 
+      }
+//-----------------------------------------------------------------------
+      if(ps2x.Button(PSB_GREEN))
+      {
+         nang();
+         Serial.println("xanh la");
+      }
+      if(ps2x.Button(PSB_BLUE))  
+      {
+        ha();
+        Serial.println("xanh duong");             
+      }
+      if(ps2x.Button(PSB_RED))
+      { 
+         nha();
+         Serial.println("đo");           
+      }   
+      if(ps2x.Button(PSB_PINK))  
+      {
+        kep();
+        Serial.println("hong");         
+      }
+//-------------------------------------------------------------------------------------------------
+      if(ps2x.Button(PSB_L1))
+      {
+         nang();
+         Serial.println("L1");
+      }
+      if(ps2x.Button(PSB_L2))  
+      {
+         ha();
+         Serial.println("L2");             
+      }
+      if(ps2x.Button(PSB_R1))
+      { 
+         nha();
+         Serial.println("R1");         
+      }
+      if(ps2x.Button(PSB_R2))  
+      {
+        kep();
+        Serial.println("R2");         
+      }
+      if (!ps2x.Button(PSB_PAD_DOWN) && !ps2x.Button(PSB_PAD_UP) && !ps2x.Button(PSB_PAD_RIGHT) && !ps2x.Button(PSB_PAD_LEFT) 
+      && !ps2x.Button(PSB_GREEN)&& !ps2x.Button(PSB_RED) && !ps2x.Button(PSB_BLUE)&& !ps2x.Button(PSB_PINK) 
+      && !ps2x.Button(PSB_L1) && !ps2x.Button(PSB_L2) && !ps2x.Button(PSB_R1) && !ps2x.Button(PSB_R2)) 
+      {
+          Serial.println("dung");
+          dung(0,0); 
+      }
+      delay(50);  
+ }  
+ 
+}
+//----------------------------------------------------------------
+
+void tien(int a, int b)
+{
+  analogWrite(ENA,a);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN1,HIGH);
+
+  analogWrite(ENB,b);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,HIGH);
+}
+
+void lui(int a, int b)
+{
+  analogWrite(ENA,a);
+  digitalWrite(IN2,HIGH);
+  digitalWrite(IN1,LOW);
+
+  analogWrite(ENB,b);
+  digitalWrite(IN4,HIGH);
+  digitalWrite(IN3,LOW);
+}
+
+void trai(int a, int b)
+{
+  analogWrite(ENA,a);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN1,HIGH);
+
+  analogWrite(ENB,b);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,HIGH);
+}
+
+void phai(int a, int b)
+{
+  analogWrite(ENB,a);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN1,HIGH);
+
+  analogWrite(ENB,b);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,HIGH); 
+}
+
+void dung(int a, int b)
+{
+  analogWrite(ENB,a);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN1,LOW);
+
+  analogWrite(ENB,b);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,LOW); 
+}
+
+void kep()
+{
+    goc1 = goc1 + 5;
+    if(goc1 > 180)
+    {
+      goc1 = 180;
+      kep11.write(goc1);
+    }
+    else
+       kep11.write(goc1);
+}                                                
+
+void nha()
+{
+    goc1 = goc1 - 5;
+    if(goc1 > 115)
+    {
+      kep11.write(goc1);
+    }
+    else
+    {
+      goc1 = 120;
+      kep11.write(goc1);
+    }
+}
+
+void nang()
+{
+    goc2 = goc2 + 5;
+    if(goc2 < 180)
+    {
+      nang10.write(goc2);
+    }
+    else
+    {
+      goc2 = 180;
+      nang10.write(goc2);
+    }
+}
+
+void ha()
+{
+    goc2 = goc2 - 5;
+    if(goc2 > 0)
+    {
+      nang10.write(goc2);
+    }
+    else
+    {
+      goc2 = 0;
+      nang10.write(goc2);
+    }
+}
