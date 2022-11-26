@@ -1,0 +1,87 @@
+
+#define IN1 2
+#define IN2 4
+#define IN3 7
+#define IN4 8
+
+// dinh nghia ham 
+void tien();
+void lui();
+void phai();
+void trai();
+void dung();
+
+void setup() 
+{
+ // khia boa dau ra cho 4 chan
+ pinMode(IN1,OUTPUT);
+ pinMode(IN2,OUTPUT);
+ pinMode(IN3,OUTPUT);
+ pinMode(IN4,OUTPUT);
+ // cai dat trang thai dung ban dai cho 4 banh x3
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,LOW);
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,LOW);
+}
+
+void loop() 
+{
+  tien();
+  delay(5000);
+  dung();
+  delay(1000);
+  lui();
+  delay(5000);
+  dung();
+  delay(1000);
+  phai();
+  delay(5000);
+  dung();
+  delay(1000);
+  trai();
+  delay(5000);
+  dung();
+  delay(1000);
+}
+// thu qua cac chan A0, A1..... thư được không
+
+void tien()
+{
+  digitalWrite(IN2,LOW);
+  analogWrite(IN1,HIGH);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,HIGH);
+}
+
+void lui()
+{
+  digitalWrite(IN2,HIGH);
+  analogWrite(IN1,LOW);
+  digitalWrite(IN4,HIGH);
+  digitalWrite(IN3,LOW);
+}
+
+void trai()
+{
+  digitalWrite(IN2,LOW);
+  analogWrite(IN1,HIGH);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,LOW);
+}
+
+void phai()
+{
+  digitalWrite(IN2,LOW);
+  analogWrite(IN1,LOW);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,HIGH); 
+}
+
+void dung()
+{
+  digitalWrite(IN2,LOW);
+  analogWrite(IN1,LOW);
+  digitalWrite(IN4,LOW);
+  digitalWrite(IN3,LOW); 
+}
